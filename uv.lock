@@ -594,6 +594,12 @@ wheels = [
 ]
 
 [[package]]
+name = "pyperclip"
+version = "1.9.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/30/23/2f0a3efc4d6a32f3b63cdff36cd398d9701d26cda58e3ab97ac79fb5e60d/pyperclip-1.9.0.tar.gz", hash = "sha256:b7de0142ddc81bfc5c7507eea19da920b92252b548b96186caf94a5e2527d310", size = 20961, upload-time = "2024-06-18T20:38:48.401Z" }
+
+[[package]]
 name = "python-xlib"
 version = "0.33"
 source = { registry = "https://pypi.org/simple" }
@@ -888,6 +894,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "parakeet-mlx" },
     { name = "pynput" },
+    { name = "pyperclip" },
     { name = "sounddevice" },
     { name = "soundfile" },
 ]
@@ -896,6 +903,7 @@ dependencies = [
 requires-dist = [
     { name = "parakeet-mlx", specifier = ">=0.3.1" },
     { name = "pynput", specifier = ">=1.8.1" },
+    { name = "pyperclip", specifier = ">=1.9.0" },
     { name = "sounddevice", specifier = ">=0.5.2" },
     { name = "soundfile", specifier = ">=0.13.1" },
 ]

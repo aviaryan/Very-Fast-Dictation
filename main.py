@@ -4,6 +4,10 @@ import soundfile as sf
 from pynput import keyboard
 import numpy as np
 import threading
+from modules.stt import transcribe
+import pyperclip
+import sys
+import subprocess
 
 # --- Configuration ---
 DOUBLE_PRESS_INTERVAL = 0.3  # Seconds
@@ -73,9 +77,31 @@ def stop_recording():
         recording = np.concatenate(audio_frames, axis=0)
         sf.write(filename, recording, SAMPLE_RATE)
         print(f"Recording saved to {filename}")
+        transcript = transcribe(filename)
+        if transcript:
+            paste_text(transcript)
     else:
         print("No audio was recorded.")
 
+def paste_text(text):
+    """Pastes the given text by copying it to clipboard and simulating a paste command."""
+    pyperclip.copy(text)
+
+    if sys.platform == "darwin":
+        # For macOS, use AppleScript to simulate paste.
+        # This is more reliable than pynput's controller for GUI interactions.
+        subprocess.run(
+            ["osascript", "-e", 'tell application "System Events" to keystroke "v" using command down']
+        )
+    else:
+        # For other OSes, use pynput
+        modifier = keyboard.Key.ctrl
+        controller = keyboard.Controller()
+        with controller.pressed(modifier):
+            controller.press("v")
+            controller.release("v")
+
+    print("Pasted: " + text)
 
 def main():
     print("Press Ctrl twice quickly to start recording.")
