@@ -9,7 +9,8 @@ import threading
 DOUBLE_PRESS_INTERVAL = 0.3  # Seconds
 SAMPLE_RATE = 44100  # Hertz
 CHANNELS = 1  # Mono
-OUTPUT_FILENAME_TEMPLATE = "recording_{timestamp}.wav"
+OUTPUT_FILENAME_TEMPLATE = "recording.wav"
+FRAMES_PER_BUFFER = 1024
 
 # --- State ---
 last_key_press_time = 0
@@ -43,7 +44,7 @@ def record_audio():
     with sd.InputStream(samplerate=SAMPLE_RATE, channels=CHANNELS, dtype='float32') as stream:
         print("Recording started...")
         while is_recording:
-            frames, overflowed = stream.read(SAMPLE_RATE)
+            frames, overflowed = stream.read(FRAMES_PER_BUFFER)
             if overflowed:
                 print("Warning: input overflowed")
             audio_frames.append(frames)
@@ -68,7 +69,7 @@ def stop_recording():
         listener_thread.join() # Wait for recording thread to finish
 
     if audio_frames:
-        filename = OUTPUT_FILENAME_TEMPLATE.format(timestamp=get_timestamp_str())
+        filename = OUTPUT_FILENAME_TEMPLATE
         recording = np.concatenate(audio_frames, axis=0)
         sf.write(filename, recording, SAMPLE_RATE)
         print(f"Recording saved to {filename}")
