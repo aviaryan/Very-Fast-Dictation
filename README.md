@@ -18,8 +18,8 @@ Very Fast Dictation is a minimalist, high-performance, and real-time transcripti
 
 1.  **Clone the repository:**
     ```sh
-    git clone https://github.com/aviaryan/VeryFastDictation.git
-    cd VeryFastDictation
+    git clone https://github.com/aviaryan/Very-Fast-Dictation.git
+    cd Very-Fast-Dictation
     ```
 
 2.  **Install dependencies:**
@@ -41,14 +41,14 @@ Very Fast Dictation is a minimalist, high-performance, and real-time transcripti
 2.  **Start Dictating:**
     -   Go to any text field in any application.
     -   Press the `Control` key twice rapidly to start recording.
-    -   You will see a "Recording..." label appear on your screen.
+    -   You will see a "Recording..." label appear on your screen at the center.
     -   Begin speaking.
-    -   Press the `Control` key twice again to stop.
-    -   The transcribed text will be available in your clipboard, ready to be pasted.
+    -   Press the `Control` key once to stop.
+    -   The transcribed text will be instantly pasted to your active screen.
 
 ## 🤝 Contributing
 
-Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/aviaryan/VeryFastDictation/issues).
+Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/aviaryan/Very-Fast-Dictation/issues).
 
 ## 📄 License
 
