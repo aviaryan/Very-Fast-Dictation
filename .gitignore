@@ -13,3 +13,4 @@ wheels/
 
 # not using this
 requirements.txt 
+.DS_Store
