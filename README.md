@@ -12,7 +12,7 @@ Very Fast Dictation is a minimalist, high-performance, and real-time transcripti
 -   **🌐 System-Wide:** Use it in any application on your desktop.
 -   **⌨️ Shortcut Activated:** Just press `Control` twice to start and stop dictating.
 -   **🚦 Visual Indicator:** A "Recording..." label appears so you know when it's listening.
--   **📋 Clipboard Integration:** The transcribed text is automatically copied to your clipboard.
+-   **📋 Clipboard Integration:** The transcribed text is automatically copied to your clipboard and pasted to the active window.
 
 ## ⚙️ Installation
 
@@ -46,10 +46,12 @@ Very Fast Dictation is a minimalist, high-performance, and real-time transcripti
     -   Press the `Control` key once to stop.
     -   The transcribed text will be instantly pasted to your active screen.
 
-## 🤝 Contributing
+## 🛠️ Common Issues
 
-Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/aviaryan/Very-Fast-Dictation/issues).
+#### Transcribed text isn't pasting
 
-## 📄 License
+If you are able to record text but it doesn't paste anything once recording is done, make sure to give the following access to the application running this Python script.
 
-This project is licensed under the MIT License.
+Eg - If you are running this script on your `Terminal.app`, go to System Settings -> Privacy & Security -> Accessibility and make sure the toggle is turned on for `Terminal`.
+
+**Tip** - If you don't want to give full accessibility permissions to your Terminal or code editor, install a second terminal app like Warp or iTerm. Use this second-terminal for running this application only. Now, you can safely give accessibility permissions to this terminal app as you will not be using it for anything else.
