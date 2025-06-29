@@ -8,6 +8,7 @@ dependencies = [
     "parakeet-mlx>=0.3.1",
     "pynput>=1.8.1",
     "pyperclip>=1.9.0",
+    "pyside6>=6.9.1",
     "sounddevice>=0.5.2",
     "soundfile>=0.13.1",
 ]
