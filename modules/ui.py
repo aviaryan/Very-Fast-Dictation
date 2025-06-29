@@ -1,17 +1,7 @@
 import sys
 from PySide6.QtWidgets import QApplication, QLabel
 from PySide6.QtCore import Qt, QMetaObject
-from PySide6.QtGui import QIcon, QPixmap
-
-if sys.platform == "darwin":
-    try:
-        import AppKit
-        from Foundation import NSData
-    except ImportError:
-        print(
-            "pyobjc-framework-Cocoa not installed. "
-            "Install it with 'pip install pyobjc-framework-Cocoa' to set the dock icon."
-        )
+from PySide6.QtGui import QIcon
 
 
 class Notification:
@@ -22,33 +12,11 @@ class Notification:
         self.app = QApplication.instance()
         if not self.app:
             self.app = QApplication(sys.argv)
-        
-        self._set_app_identity()
-        self.widget = self._create_widget()
 
-    def _set_app_identity(self):
-        """Sets the application name and icon."""
-        self.app.setApplicationName("VeryFastDictation")
         icon_path = "images/icon.png"
-
         self.app.setWindowIcon(QIcon(icon_path))
 
-        if sys.platform == "darwin" and "AppKit" in sys.modules:
-            # Make the app a proper UI app in the dock
-            ns_app = AppKit.NSApplication.sharedApplication()
-            ns_app.setActivationPolicy_(AppKit.NSApplicationActivationPolicyRegular)
-
-            # Set app name in the menu bar and icon in the Dock
-            bundle = AppKit.NSBundle.mainBundle()
-            if bundle:
-                info = bundle.infoDictionary()
-                info["CFBundleName"] = "VeryFastDictation"
-
-            with open(icon_path, "rb") as f:
-                icon_data = f.read()
-            data = NSData.dataWithBytes_length_(icon_data, len(icon_data))
-            image = AppKit.NSImage.alloc().initWithData_(data)
-            ns_app.setApplicationIconImage_(image)
+        self.widget = self._create_widget()
 
     def _create_widget(self):
         """Creates and configures the notification QLabel."""
