@@ -29,13 +29,13 @@ class Notification:
         )
         widget.adjustSize()
 
-        # Position the widget at the top-right corner of the primary screen
+        # Position the widget at the center of the primary screen
         screen = self.app.primaryScreen()
         if screen:
             screen_geometry = screen.geometry()
             widget.move(
-                screen_geometry.width() - widget.width() - 20,
-                40  # 40 pixels from the top
+                (screen_geometry.width() - widget.width()) // 2,
+                (screen_geometry.height() - widget.height()) // 2,
             )
         return widget
 
