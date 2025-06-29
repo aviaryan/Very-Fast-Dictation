@@ -1,12 +1,10 @@
+https://github.com/user-attachments/assets/c1a1f4d8-dc97-40a3-8e49-0b31021e100b
+
 # Very Fast Dictation (M-Series Macs) 🎙️
 
 A blazing fast, real-time, system-wide dictation tool for your desktop.
 
 Very Fast Dictation is a minimalist, high-performance, and real-time transcription tool. It's designed for speed and efficiency, allowing you to dictate text from anywhere in your operating system with a simple keyboard shortcut.
-
-## 📹 Demo
-
-https://github.com/user-attachments/assets/c1a1f4d8-dc97-40a3-8e49-0b31021e100b
 
 
 ## ✨ Features
