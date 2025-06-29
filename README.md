@@ -1,6 +1,4 @@
-<img src="images/icon.png" alt="logo" width="100"/>
-
-# Very Fast Dictation 🎙️
+# Very Fast Dictation (M-Series Macs) 🎙️
 
 A blazing fast, real-time, system-wide dictation tool for your desktop.
 
