@@ -113,6 +113,7 @@ def main():
     global notification
     notification = Notification()
 
+    print("Application started.")
     print("Press Ctrl twice quickly to start recording.")
     print("Press Ctrl again to stop.")
 

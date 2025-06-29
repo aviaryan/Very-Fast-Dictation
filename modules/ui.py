@@ -20,7 +20,7 @@ class Notification:
 
     def _create_widget(self):
         """Creates and configures the notification QLabel."""
-        widget = QLabel("Recording...")
+        widget = QLabel("Recording... (Press Ctrl to end)")
         widget.setWindowFlags(
             Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint | Qt.ToolTip
         )
