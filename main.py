@@ -5,11 +5,10 @@ from pynput import keyboard
 import numpy as np
 import threading
 from modules.stt import transcribe
+from modules.ui import Notification
 import pyperclip
 import sys
 import subprocess
-from PySide6.QtWidgets import QApplication, QLabel
-from PySide6.QtCore import Qt, QMetaObject
 
 # --- Configuration ---
 DOUBLE_PRESS_INTERVAL = 0.3  # Seconds
@@ -23,7 +22,7 @@ last_key_press_time = 0
 is_recording = False
 audio_frames = []
 listener_thread = None
-notification_widget = None
+notification = None
 
 def get_timestamp_str():
     return time.strftime("%Y%m%d_%H%M%S")
@@ -61,8 +60,8 @@ def start_recording():
     if is_recording:
         return
     print("Double-press detected. Starting recording.")
-    if notification_widget:
-        QMetaObject.invokeMethod(notification_widget, "show", Qt.QueuedConnection)
+    if notification:
+        notification.show()
     is_recording = True
     listener_thread = threading.Thread(target=record_audio)
     listener_thread.start()
@@ -73,8 +72,8 @@ def stop_recording():
         return
 
     print("Stopping recording...")
-    if notification_widget:
-        QMetaObject.invokeMethod(notification_widget, "hide", Qt.QueuedConnection)
+    if notification:
+        notification.hide()
     is_recording = False
     if listener_thread:
         listener_thread.join() # Wait for recording thread to finish
@@ -111,35 +110,18 @@ def paste_text(text):
     print("Pasted: " + text)
 
 def main():
-    global notification_widget
-    app = QApplication(sys.argv)
-
-    # Create and configure the notification widget
-    notification_widget = QLabel("Recording...")
-    notification_widget.setWindowFlags(
-        Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint | Qt.ToolTip
-    )
-    notification_widget.setStyleSheet(
-        "background-color: black; color: white; padding: 10px; border-radius: 5px;"
-    )
-    notification_widget.adjustSize()
-    
-    # Position the widget at the top-right corner
-    screen = app.primaryScreen()
-    if screen:
-        screen_geometry = screen.geometry()
-        notification_widget.move(
-            screen_geometry.width() - notification_widget.width() - 20,
-            40
-        )
+    global notification
+    notification = Notification()
 
     print("Press Ctrl twice quickly to start recording.")
     print("Press Ctrl again to stop.")
 
-    listener = keyboard.Listener(on_press=on_press)
-    listener.start()
-
-    sys.exit(app.exec())
+    with keyboard.Listener(on_press=on_press) as listener:
+        # The listener joining and the notification running are not mutually exclusive.
+        # We need the listener to run in a background thread and the UI to run in the main thread.
+        listener_thread = threading.Thread(target=listener.join)
+        listener_thread.start()
+        notification.run()
 
 
 if __name__ == "__main__":
