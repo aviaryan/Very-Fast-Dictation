@@ -48,7 +48,7 @@ Very Fast Dictation is a minimalist, high-performance, and real-time transcripti
 
 ## 🛠️ Common Issues
 
-#### Transcribed text isn't pasting
+### 📋 Transcribed text isn't pasting
 
 If you are able to record text but it doesn't paste anything once recording is done, make sure to give the following access to the application running this Python script.
 
