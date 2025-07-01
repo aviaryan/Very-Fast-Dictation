@@ -28,7 +28,7 @@ https://github.com/user-attachments/assets/c1a1f4d8-dc97-40a3-8e49-0b31021e100b
     This project uses [uv](https://github.com/astral-sh/uv) for package management. Once you have `uv` installed, run the following command to install the required packages:
 
     ```sh
-    uv install
+    uv sync
     ```
     This will install all necessary dependencies including `parakeet-mlx`, `pynput`, `pyside6` and others.
 
