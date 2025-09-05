@@ -94,11 +94,33 @@ def paste_text(text):
     pyperclip.copy(text)
 
     if sys.platform == "darwin":
-        # For macOS, use AppleScript to simulate paste.
-        # This is more reliable than pynput's controller for GUI interactions.
-        subprocess.run(
-            ["osascript", "-e", 'tell application "System Events" to keystroke "v" using command down']
-        )
+        # Try AppleScript first; if blocked by permissions, fall back to pynput
+        success = False
+        try:
+            result = subprocess.run(
+                ["osascript", "-e", 'tell application "System Events" to keystroke "v" using command down'],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            success = (result.returncode == 0)
+        except Exception:
+            success = False
+
+        if not success:
+            try:
+                controller = keyboard.Controller()
+                with controller.pressed(keyboard.Key.cmd):
+                    controller.press("v")
+                    controller.release("v")
+                success = True
+            except Exception:
+                success = False
+
+        if not success:
+            print(
+                "Paste failed on macOS. Grant Accessibility permission to Terminal/Python in System Settings > Privacy & Security > Accessibility."
+            )
     else:
         # For other OSes, use pynput
         modifier = keyboard.Key.ctrl
