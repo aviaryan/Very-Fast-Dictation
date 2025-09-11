@@ -24,8 +24,10 @@ audio_frames = []
 listener_thread = None
 notification = None
 
+
 def get_timestamp_str():
     return time.strftime("%Y%m%d_%H%M%S")
+
 
 def on_press(key):
     global last_key_press_time, is_recording, audio_frames
@@ -44,16 +46,20 @@ def on_press(key):
     except Exception as e:
         print(f"An error occurred: {e}")
 
+
 def record_audio():
     global audio_frames
     audio_frames = []
-    with sd.InputStream(samplerate=SAMPLE_RATE, channels=CHANNELS, dtype='float32') as stream:
+    with sd.InputStream(
+        samplerate=SAMPLE_RATE, channels=CHANNELS, dtype="float32"
+    ) as stream:
         print("Recording started...")
         while is_recording:
             frames, overflowed = stream.read(FRAMES_PER_BUFFER)
             if overflowed:
                 print("Warning: input overflowed")
             audio_frames.append(frames)
+
 
 def start_recording():
     global is_recording, listener_thread
@@ -66,6 +72,7 @@ def start_recording():
     listener_thread = threading.Thread(target=record_audio)
     listener_thread.start()
 
+
 def stop_recording():
     global is_recording, listener_thread
     if not is_recording:
@@ -76,7 +83,7 @@ def stop_recording():
         notification.hide()
     is_recording = False
     if listener_thread:
-        listener_thread.join() # Wait for recording thread to finish
+        listener_thread.join()  # Wait for recording thread to finish
 
     if audio_frames:
         filename = OUTPUT_FILENAME_TEMPLATE
@@ -89,6 +96,7 @@ def stop_recording():
     else:
         print("No audio was recorded.")
 
+
 def paste_text(text):
     """Pastes the given text by copying it to clipboard and simulating a paste command."""
     pyperclip.copy(text)
@@ -98,12 +106,16 @@ def paste_text(text):
         success = False
         try:
             result = subprocess.run(
-                ["osascript", "-e", 'tell application "System Events" to keystroke "v" using command down'],
+                [
+                    "osascript",
+                    "-e",
+                    'tell application "System Events" to keystroke "v" using command down',
+                ],
                 capture_output=True,
                 text=True,
                 check=False,
             )
-            success = (result.returncode == 0)
+            success = result.returncode == 0
         except Exception:
             success = False
 
@@ -130,6 +142,7 @@ def paste_text(text):
             controller.release("v")
 
     print("Pasted: " + text)
+
 
 def main():
     global notification
