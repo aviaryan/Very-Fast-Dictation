@@ -1,13 +1,13 @@
 import sys
 from PySide6.QtWidgets import QApplication, QLabel
-from PySide6.QtCore import Qt, QMetaObject
+from PySide6.QtCore import Qt, QMetaObject, QTimer
 from PySide6.QtGui import QIcon
 
 
 class Notification:
     """A simple notification widget that can be shown and hidden."""
 
-    def __init__(self):
+    def __init__(self, shutdown_callback=None):
         """Initializes the notification widget and the QApplication."""
         self.app = QApplication.instance()
         if not self.app:
@@ -17,6 +17,13 @@ class Notification:
         self.app.setWindowIcon(QIcon(icon_path))
 
         self.widget = self._create_widget()
+        self.shutdown_callback = shutdown_callback
+
+        # Set up timer to check for shutdown signals
+        if shutdown_callback:
+            self.timer = QTimer()
+            self.timer.timeout.connect(self._check_shutdown)
+            self.timer.start(200)  # Check every 200ms
 
     def _create_widget(self):
         """Creates and configures the notification QLabel."""
@@ -49,4 +56,16 @@ class Notification:
 
     def run(self):
         """Starts the Qt application event loop."""
-        sys.exit(self.app.exec())
+        return self.app.exec()
+
+    def _check_shutdown(self):
+        """Called by timer to check if shutdown was requested."""
+        if self.shutdown_callback and self.shutdown_callback():
+            self.quit()
+
+    def quit(self):
+        """Quits the Qt application."""
+        if hasattr(self, "timer"):
+            self.timer.stop()
+        if self.app:
+            self.app.quit()
