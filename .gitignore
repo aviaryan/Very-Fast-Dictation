@@ -12,5 +12,6 @@ wheels/
 *.wav
 
 # not using this
-requirements.txt 
+requirements.txt
+requirements*.txt
 .DS_Store

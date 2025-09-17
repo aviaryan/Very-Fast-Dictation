@@ -48,6 +48,15 @@ https://github.com/user-attachments/assets/c1a1f4d8-dc97-40a3-8e49-0b31021e100b
     -   Press the `Control` key once to stop.
     -   The transcribed text will be instantly pasted to your active screen.
 
+## 👨🏻‍💻 Dev
+
+For linting and formatting -
+
+```sh
+uv run ruff check
+uv run ruff format
+```
+
 ## 🛠️ Common Issues
 
 ### 📋 Transcribed text isn't pasting
