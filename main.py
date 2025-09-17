@@ -15,7 +15,7 @@ import signal
 DOUBLE_PRESS_INTERVAL = 0.3  # Seconds
 SAMPLE_RATE = 44100  # Hertz
 CHANNELS = 1  # Mono
-OUTPUT_FILENAME_TEMPLATE = 'recording.wav'
+OUTPUT_FILENAME_TEMPLATE = "recording.wav"
 FRAMES_PER_BUFFER = 1024
 
 # --- State ---
