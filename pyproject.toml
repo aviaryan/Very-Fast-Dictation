@@ -12,3 +12,8 @@ dependencies = [
     "sounddevice>=0.5.2",
     "soundfile>=0.13.1",
 ]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.13.0",
+]
