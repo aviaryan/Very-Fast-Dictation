@@ -6,9 +6,8 @@ import numpy as np
 import threading
 from modules.stt import transcribe
 from modules.ui import Notification
-import pyperclip
+from modules.clipboard import paste_text
 import sys
-import subprocess
 import signal
 
 # --- Configuration ---
@@ -131,53 +130,6 @@ def stop_recording():
             paste_text(transcript)
     else:
         print("No audio was recorded.")
-
-
-def paste_text(text):
-    """Pastes the given text by copying it to clipboard and simulating a paste command."""
-    pyperclip.copy(text)
-
-    if sys.platform == "darwin":
-        # Try AppleScript first; if blocked by permissions, fall back to pynput
-        success = False
-        try:
-            result = subprocess.run(
-                [
-                    "osascript",
-                    "-e",
-                    'tell application "System Events" to keystroke "v" using command down',
-                ],
-                capture_output=True,
-                text=True,
-                check=False,
-            )
-            success = result.returncode == 0
-        except Exception:
-            success = False
-
-        if not success:
-            try:
-                controller = keyboard.Controller()
-                with controller.pressed(keyboard.Key.cmd):
-                    controller.press("v")
-                    controller.release("v")
-                success = True
-            except Exception:
-                success = False
-
-        if not success:
-            print(
-                "Paste failed on macOS. Grant Accessibility permission to Terminal/Python in System Settings > Privacy & Security > Accessibility."
-            )
-    else:
-        # For other OSes, use pynput
-        modifier = keyboard.Key.ctrl
-        controller = keyboard.Controller()
-        with controller.pressed(modifier):
-            controller.press("v")
-            controller.release("v")
-
-    print("Pasted: " + text)
 
 
 def check_shutdown_requested():
