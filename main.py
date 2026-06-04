@@ -26,6 +26,9 @@ notification = None
 keyboard_listener = None
 shutdown_requested = False
 shutdown_in_progress = False
+is_stopping = False
+state_lock = threading.Lock()
+frame_lock = threading.Lock()
 
 
 def get_timestamp_str():
@@ -65,7 +68,7 @@ def signal_handler(sig, frame):
 
 
 def on_press(key):
-    global last_key_press_time, is_recording, audio_frames
+    global last_key_press_time
 
     try:
         if key == keyboard.Key.ctrl_l or key == keyboard.Key.ctrl_r:
@@ -74,7 +77,7 @@ def on_press(key):
             last_key_press_time = current_time
 
             if is_recording:
-                stop_recording()
+                request_stop_recording()
             elif time_since_last_press < DOUBLE_PRESS_INTERVAL:
                 start_recording()
 
@@ -83,53 +86,104 @@ def on_press(key):
 
 
 def record_audio():
-    global audio_frames
-    audio_frames = []
-    with sd.InputStream(
-        samplerate=SAMPLE_RATE, channels=CHANNELS, dtype="float32"
-    ) as stream:
-        print("Recording started...")
-        while is_recording:
-            frames, overflowed = stream.read(FRAMES_PER_BUFFER)
-            if overflowed:
-                print("Warning: input overflowed")
-            audio_frames.append(frames)
+    global audio_frames, is_recording
+
+    try:
+        with sd.InputStream(
+            samplerate=SAMPLE_RATE, channels=CHANNELS, dtype="float32"
+        ) as stream:
+            print("Recording started...")
+            while True:
+                with state_lock:
+                    should_continue = is_recording
+                if not should_continue:
+                    break
+
+                frames, overflowed = stream.read(FRAMES_PER_BUFFER)
+                if overflowed:
+                    print("Warning: input overflowed")
+                with frame_lock:
+                    audio_frames.append(frames.copy())
+    except Exception as e:
+        with state_lock:
+            is_recording = False
+        if notification:
+            notification.hide()
+        print(f"Recording failed: {e}")
 
 
 def start_recording():
-    global is_recording, listener_thread
-    if is_recording:
-        return
+    global is_recording, listener_thread, audio_frames
+
+    with state_lock:
+        if is_recording or is_stopping:
+            return
+        is_recording = True
+
+    with frame_lock:
+        audio_frames = []
+
     print("Double-press detected. Starting recording.")
     if notification:
         notification.show()
-    is_recording = True
-    listener_thread = threading.Thread(target=record_audio)
+    listener_thread = threading.Thread(target=record_audio, daemon=True)
     listener_thread.start()
 
 
+def request_stop_recording():
+    """Stops recording in a worker so the keyboard listener remains responsive."""
+    global is_stopping
+
+    with state_lock:
+        if not is_recording or is_stopping:
+            return
+        is_stopping = True
+
+    threading.Thread(target=stop_recording, daemon=True).start()
+
+
 def stop_recording():
-    global is_recording, listener_thread
-    if not is_recording:
-        return
+    global is_recording, is_stopping, listener_thread
+
+    with state_lock:
+        if not is_recording:
+            is_stopping = False
+            return
+        is_recording = False
 
     print("Stopping recording...")
     if notification:
         notification.hide()
-    is_recording = False
-    if listener_thread:
-        listener_thread.join()  # Wait for recording thread to finish
 
-    if audio_frames:
-        filename = OUTPUT_FILENAME_TEMPLATE
-        recording = np.concatenate(audio_frames, axis=0)
-        sf.write(filename, recording, SAMPLE_RATE)
-        print(f"Recording saved to {filename}")
-        transcript = transcribe(filename)
-        if transcript:
-            paste_text(transcript)
-    else:
-        print("No audio was recorded.")
+    recording_thread = listener_thread
+    if recording_thread and recording_thread.is_alive():
+        recording_thread.join(timeout=2)
+
+    if recording_thread and recording_thread.is_alive():
+        print(
+            "Warning: recording thread did not stop promptly; "
+            "continuing with captured audio."
+        )
+
+    with frame_lock:
+        captured_frames = list(audio_frames)
+
+    try:
+        if captured_frames:
+            filename = OUTPUT_FILENAME_TEMPLATE
+            recording = np.concatenate(captured_frames, axis=0)
+            sf.write(filename, recording, SAMPLE_RATE)
+            print(f"Recording saved to {filename}")
+            transcript = transcribe(filename)
+            if transcript:
+                paste_text(transcript)
+        else:
+            print("No audio was recorded.")
+    except Exception as e:
+        print(f"Failed to process recording: {e}")
+    finally:
+        with state_lock:
+            is_stopping = False
 
 
 def check_shutdown_requested():
